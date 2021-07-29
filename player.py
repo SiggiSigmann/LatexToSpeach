@@ -25,7 +25,7 @@ class Application(Frame):
         self.pauseMarker = 1
 
         #display time        
-        self.stime = None
+        self.playTime = None
         self.timePause = None
 
         #songlength
@@ -196,7 +196,7 @@ class Application(Frame):
         mixer.music.play()
 
         #store time
-        self.stime = time.time()
+        self.playTime = time.time()
 
         #store not paused
         self.pauseMarker = 1
@@ -227,25 +227,25 @@ class Application(Frame):
             mixer.music.unpause()
 
             #calc new time
-            self.stime =  self.stime+(time.time()- self.timePause)
+            self.playTime =  self.playTime+(time.time()- self.timePause)
 
             self.updateLabel("playing")
 
     def p10(self):
-        elapsed = time.time() - self.stime
+        elapsed = time.time() - self.playTime
         self.setpos(elapsed+10)
 
     def m10(self):
-        elapsed = time.time() - self.stime
+        elapsed = time.time() - self.playTime
         delta = min(elapsed, 10)
         self.setpos(elapsed-delta)
 
     def p5(self):
-        elapsed = time.time() - self.stime
+        elapsed = time.time() - self.playTime
         self.setpos(elapsed+5)
 
     def m5(self):
-        elapsed = time.time() - self.stime
+        elapsed = time.time() - self.playTime
         delta = min(elapsed, 5)
         self.setpos(elapsed-delta)
 
@@ -296,7 +296,7 @@ class Application(Frame):
         self.setpos(posistion)
 
         #update time
-        self.stime = time.time() - posistion
+        self.playTime = time.time() - posistion
 
     def stopUpdateAutoUpdateForSlider(self, event):
         self.updateSlider = False
@@ -322,7 +322,7 @@ class Application(Frame):
         mixer.music.play(0, x/2)
 
         #update play time
-        self.stime = time.time()-x
+        self.playTime = time.time()-x
 
     def updateLabel(self, text):
         #update status label
@@ -408,10 +408,10 @@ class Application(Frame):
             #check if music is played and if thread should be closed
             while mixer.music.get_busy() and getattr(t, "do_run", True):
                 #calc percentage
-                perc = ((time.time() - self.stime)/self.mp3Length)*100
+                perc = ((time.time() - self.playTime)/self.mp3Length)*100
 
                 #create time strings
-                ta =  time.strftime('%M:%S', time.gmtime(time.time() - self.stime))
+                ta =  time.strftime('%M:%S', time.gmtime(time.time() - self.playTime))
                 tb =  time.strftime('%M:%S', time.gmtime(self.mp3Length))
 
                 #set label
@@ -423,7 +423,7 @@ class Application(Frame):
                     
                 #check if perc is bigger then 100 => update max time
                 if perc > 100:
-                    self.mp3Length = time.time() - self.stime
+                    self.mp3Length = time.time() - self.playTime
 
                 time.sleep(0.25)
 
