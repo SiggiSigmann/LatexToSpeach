@@ -93,17 +93,35 @@ class Application(Frame):
             index2 = text.index(b"}", index1)+1
             text = text[:index1] + text[index2:]
 
+        #subsubsection
+        while b"\\subsubsection{" in text:
+            index1 = text.index(b"\\subsubsection{")
+            index2 = text.index(b"}", index1)+1
+            text = text[:index1] + b"UnterUnterKapitel " + text[index1+15:index2-1] + text[index2:]
+
         #subsection
         while b"\\subsection{" in text:
             index1 = text.index(b"\\subsection{")
             index2 = text.index(b"}", index1)+1
             text = text[:index1] + b" UnterKapitel " + text[index1+9:index2-1] + text[index2:]
+        
+        #remove everything bevor section
+        while b"\\section{" in text:
+            index1 = text.index(b"\\section{")
+            index2 = text.index(b"}", index1 )+1
+            text = text[:index1] +  b"Kapitel " + text[index1+9:index2-1] + text[index2:]
 
-        #subsubsection
-        while b"\\subsubsection{" in text:
-            index1 = text.index(b"\\subsubsection{")
-            index2 = text.index(b"}", index1)+1
-            text = text[:index1] + b"UnterUnterKapitel " + text[index1+9:index2-1] + text[index2:]
+        #remove paragraph
+        while b"\\pparagraph{" in text:
+            index1 = text.index(b"\\pparagraph{")
+            index2 = text.index(b"}", index1 )+1
+            text = text[:index1] +  b"PParagraph " + text[index1+12:index2-1] + text[index2:]
+
+        #remove fparagraph
+        while b"\\fparagraph{" in text:
+            index1 = text.index(b"\\fparagraph{")
+            index2 = text.index(b"}", index1 )+1
+            text = text[:index1] +  b"fParagraph " + text[index1+12:index2-1] + text[index2:]
 
         #table
         while b"\\begin{table}" in text:
@@ -145,9 +163,26 @@ class Application(Frame):
             index1 = text.index(b"\\end{multicols}")
             text = text[:index1] + text[index1+15:]
 
+        #remove ´
+        while b"\\grqq{}" in text:
+            index1 = text.index(b"\\grqq{}")
+            text = text[:index1] + text[index1+7:]
+
+                    #remove ´
+        while b"\\grqq{ }" in text:
+            index1 = text.index(b"\\grqq{ }")
+            text = text[:index1] + text[index1+8:]
+
+        #remove ``
+        while b"\\glqq" in text:
+            index1 = text.index(b"\\glqq")
+            text = text[:index1] + text[index1+5:]
+
         return text
 
     def createTempMP3(self, text):
+        path = os.path.join(os.getcwd(),"dummy.mp3")
+
         #stop control for mp3 creation
         self.bPlay["state"] = "disabled"
         self.bStop["state"] = "disabled"
@@ -161,13 +196,15 @@ class Application(Frame):
         self.update_idletasks()
 
         #create sound
+        self.updateLabel("creating MP3")
         language = 'de'
         myobj = gTTS(text=text.decode(), lang=language, slow=False)
         
         #save model
         #load dummy file to close temp.mp3
-        mixer.music.load(os.path.join((os.getcwd(),"dummy.mp3")))
-        myobj.save(os.path.join((os.getcwd(),"temp.mp3")))
+        self.updateLabel("saving MP3")
+        myobj.save(path)
+        mixer.music.load(path)
 
         #restart control for mp3 creation
         self.bPlay["state"] = "normal"
@@ -401,7 +438,7 @@ class Application(Frame):
     # threads #################################################################################################
     def thread_function(self, name):
         #check if closed
-        t = threading.currentThread()
+        t = threading.current_thread()
         while getattr(t, "do_run", True):
             time.sleep(0.25)
 

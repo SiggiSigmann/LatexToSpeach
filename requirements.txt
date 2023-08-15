@@ -5,7 +5,7 @@ colorama==0.4.4
 gTTS==2.2.3
 idna==3.2
 mutagen==1.45.1
-pygame==2.0.1
+pygame-ce
 requests==2.26.0
 six==1.16.0
 urllib3==1.26.6
